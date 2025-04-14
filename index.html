@@ -1,6 +1,803 @@
-<head>
-  <title>Test</title>
-</head>
-<body>
-  <h1>Hello World!</h1>
-</body>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FoxyTeacup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet" />
+    <meta name="darkreader-lock" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <style>
+      .loader {
+        transform: rotateZ(45deg) scale(3, 3);
+        perspective: 1000px;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        color: #fff;
+      }
+      .loader:before,
+      .loader:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: inherit;
+        height: inherit;
+        border-radius: 50%;
+        transform: rotateX(70deg);
+        animation: 1s spin linear infinite;
+      }
+      .loader:after {
+        color: #ff3d00;
+        transform: rotateY(70deg);
+        animation-delay: 0.4s;
+      }
+
+      @keyframes rotate {
+        0% {
+          transform: translate(-50%, -50%) rotateZ(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotateZ(360deg);
+        }
+      }
+      @keyframes rotateccw {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(-360deg);
+        }
+      }
+      @keyframes spin {
+        0%,
+        100% {
+          box-shadow: 0.2em 0px 0 0px currentcolor;
+        }
+        12% {
+          box-shadow: 0.2em 0.2em 0 0 currentcolor;
+        }
+        25% {
+          box-shadow: 0 0.2em 0 0px currentcolor;
+        }
+        37% {
+          box-shadow: -0.2em 0.2em 0 0 currentcolor;
+        }
+        50% {
+          box-shadow: -0.2em 0 0 0 currentcolor;
+        }
+        62% {
+          box-shadow: -0.2em -0.2em 0 0 currentcolor;
+        }
+        75% {
+          box-shadow: 0px -0.2em 0 0 currentcolor;
+        }
+        87% {
+          box-shadow: 0.2em -0.2em 0 0 currentcolor;
+        }
+      }
+
+      body {
+        margin: 0;
+        background: #1f1f1f;
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        overflow: hidden;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+      body > article {
+        display: none;
+        overflow: hidden;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+      }
+      body > article[selected] {
+        display: flex;
+      }
+      body > footer {
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #969696;
+        opacity: 0.3;
+      }
+      a {
+        text-decoration: none;
+      }
+      a:visited {
+        color: currentColor;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .icon {
+        position: relative;
+      }
+      .icon::before {
+        content: "";
+        position: absolute;
+        height: 100%;
+        aspect-ratio: 1/1;
+        right: 100%;
+        margin-right: 5px;
+        background-size: cover;
+      }
+      .icon-butterfly::before {
+        background-image: url("/butterfly.png");
+      }
+      .icon-crab::before {
+        background-image: url("/crab.png");
+      }
+      .icon-fox::before {
+        background-image: url("/fox.png");
+      }
+      .icon-love::before {
+        background-image: url("/love.png");
+      }
+      .icon-paper::before {
+        background-image: url("/paper.png");
+      }
+      .icon-pinwheel::before {
+        background-image: url("/pinwheel.png");
+      }
+      .icon-tie::before {
+        background-image: url("/tie.png");
+      }
+      @keyframes header-basic {
+        0% {
+          background-position: -150% 0;
+        }
+        10% {
+          background-position: 150% 0;
+        }
+        100% {
+          background-position: 150% 0;
+        }
+      }
+      @keyframes header-full {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: -500px 0;
+        }
+      }
+      @keyframes header-shake {
+        0% {
+          top: 50%;
+          right: 10%;
+        }
+        10% {
+          top: 45%;
+          right: 12%;
+        }
+        30% {
+          top: 46%;
+          right: 11%;
+        }
+        40% {
+          top: 60%;
+          right: 8%;
+        }
+        70% {
+          top: 59%;
+          right: 9%;
+        }
+        90% {
+          top: 49%;
+          right: 10%;
+        }
+        100% {
+          top: 50%;
+          right: 10%;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        user-select: none;
+      }
+      .fancy-text {
+        font-family: "Cherry Bomb One", system-ui;
+        font-weight: 400;
+        font-style: normal;
+      }
+      #root {
+        overflow: visible;
+      }
+      #perks {
+        flex-wrap: wrap;
+        align-items: stretch;
+        min-width: 50%;
+        max-width: 50%;
+        gap: 30px;
+        padding: 50px;
+      }
+      #perks > section.big {
+        position: relative;
+        background: hsl(240, 55%, 50%);
+        background: linear-gradient(230deg, hsl(240, 55%, 50%) 40%, hsl(240, 75%, 70%) 80%, hsl(300, 80%, 75%) 100%);
+        min-width: 100%;
+        width: 100%;
+        max-width: 100%;
+        padding: 40px 100px;
+        border-radius: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        align-items: center;
+      }
+      #perks > section.big::before,
+      #perks > section.big::after {
+        white-space: pre;
+        color: white;
+        position: absolute;
+        transform: scale(1.2, 2.6);
+      }
+      #perks > section.big::before {
+        content: "　　✦\A✦";
+        top: 15%;
+        left: 5%;
+      }
+      #perks > section.big::after {
+        content: "✦\A　　✦";
+        bottom: 15%;
+        right: 5%;
+      }
+      #perks > section.big > header {
+        color: white;
+        font-size: 48pt;
+        line-height: 48pt;
+        text-align: center;
+      }
+      #perks > section.big > main {
+        color: white;
+        font-size: 16pt;
+      }
+      #perks > section.big > footer {
+        display: flex;
+        gap: 20px;
+      }
+      #perks > section.big > footer > button {
+        width: 200px;
+        background: hsl(320, 50%, 65%);
+        border: 1px solid hsl(320, 50%, 65%);
+        border-radius: 5px;
+        padding: 10px 10px 10px 20px;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 200ms ease-in-out;
+      }
+      #perks > section.big > footer > button:hover {
+        background: hsl(320, 50%, 55%);
+        border-color: hsl(320, 50%, 85%);
+      }
+      #perks > section.small {
+        min-width: 45%;
+        width: 45%;
+        max-width: 45%;
+        padding: 20px;
+        border-radius: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        color: white;
+      }
+      #perks > section.small.basic {
+        background: hsl(240, 65%, 55%);
+        background: linear-gradient(60deg, hsl(240, 65%, 55%) 50%, hsl(240, 55%, 65%) 100%);
+      }
+      #perks > section.small.full {
+        background: hsl(300, 80%, 65%);
+        background: linear-gradient(60deg, hsl(300, 80%, 65%) 50%, hsl(300, 50%, 80%) 100%);
+      }
+      #perks > section.small > header {
+        font-size: 32pt;
+        line-height: 0.5em;
+      }
+      #perks > section.small > header > i {
+        font-size: 14pt;
+      }
+      #perks > section.small > h3 {
+        margin: 0;
+        font-weight: normal;
+      }
+      #perks > section.small > ol {
+        margin: 0;
+        list-style-type: none;
+        flex: 1;
+      }
+      #perks > section.small > ol > li {
+        font-size: 14pt;
+        margin-bottom: 10px;
+      }
+      #perks > section.small > footer > button {
+        width: 100%;
+        background: hsl(320, 50%, 65%);
+        border: 1px solid hsl(320, 50%, 65%);
+        border-radius: 5px;
+        padding: 10px 10px 10px 20px;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 200ms ease-in-out;
+      }
+      #perks > section.small > footer > button:hover {
+        background: hsl(320, 50%, 55%);
+        border-color: hsl(320, 50%, 85%);
+      }
+      #billing > section {
+        width: 500px;
+        background: #4f2642;
+        border-radius: 20px;
+        color: white;
+      }
+      #billing > section > header {
+        height: 150px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        padding: 20px 30px;
+        position: relative;
+        background-repeat: no-repeat;
+        font-weight: bold;
+        font-style: italic;
+      }
+      #billing > section > header::before {
+        content: "FOXY";
+        font-family: "Cherry Bomb One", system-ui;
+        font-weight: 400;
+        font-style: normal;
+        position: absolute;
+        right: 10%;
+        top: 50%;
+        opacity: 0.2;
+        font-size: 68pt;
+        line-height: 0;
+        animation: 4s header-shake linear infinite;
+      }
+      #billing > section > header.basic {
+        background-color: hsl(240, 65%, 55%);
+        background-image: linear-gradient(
+          60deg,
+          hsl(240, 65%, 55%) 30%,
+          hsl(240, 65%, 60%) 45%,
+          hsl(240, 65%, 65%) 50%,
+          hsl(240, 65%, 55%) 65%
+        );
+        background-size: 200% 200%;
+        animation: 4s header-basic linear infinite;
+      }
+      #billing > section > header.full {
+        background-color: hsl(300, 80%, 65%);
+        background-image: radial-gradient(350px at 100px 100%, white, white 10%, transparent 10.5%),
+          radial-gradient(550px at 170px 100%, white, white 10%, transparent 10.5%),
+          radial-gradient(200px at 300px 100%, white, white 10%, transparent 10.5%),
+          radial-gradient(450px at 360px 100%, white, white 10%, transparent 10.5%),
+          radial-gradient(250px at 420px 100%, white, white 10%, transparent 10.5%),
+          radial-gradient(350px at 600px 100%, white, white 10%, transparent 10.5%),
+          radial-gradient(550px at 670px 100%, white, white 10%, transparent 10.5%),
+          radial-gradient(200px at 800px 100%, white, white 10%, transparent 10.5%),
+          radial-gradient(450px at 860px 100%, white, white 10%, transparent 10.5%),
+          radial-gradient(250px at 920px 100%, white, white 10%, transparent 10.5%),
+          linear-gradient(0deg, hsl(240, 65%, 85%), transparent 30%);
+        background-size: 200% 100%;
+        animation: 4s header-full linear infinite;
+      }
+      #billing .breadcrumbs {
+        padding: 10px;
+        font-size: 0.9em;
+      }
+      #billing .breadcrumbs > span {
+        opacity: 0.5;
+      }
+      #billing .breadcrumbs > b {
+        opacity: 1;
+      }
+      #billing main {
+        padding: 10px;
+      }
+      #billing table {
+        width: 100%;
+      }
+      #billing table tr > td:last-child {
+        text-align: end;
+      }
+      input[type="radio"] {
+        display: none;
+      }
+      .plan {
+        display: flex;
+        gap: 10px;
+        padding: 5px 0;
+        cursor: pointer;
+        align-items: center;
+      }
+      #billing > section > main > b {
+        margin-bottom: 10px;
+        display: block;
+      }
+      .price {
+        flex: 1;
+        text-align: right;
+      }
+      .checkmark {
+        width: 25px;
+      }
+      input + .checkmark::before {
+        content: "";
+        border: 1px solid #d377b4;
+        border-radius: 5px;
+        width: 20px;
+        height: 20px;
+        display: block;
+        text-align: center;
+        font-size: 15px;
+      }
+      input:checked + .checkmark::before {
+        content: "✔";
+        background: #d377b4;
+      }
+      label.plan > .discount {
+        font-size: 10pt;
+        background: #40a258;
+        border-radius: 10px;
+        padding: 2px 8px;
+        font-weight: bold;
+        color: white;
+      }
+      hr {
+        border: none;
+        height: 1px;
+        background-color: #57334d;
+        margin-top: 15px;
+      }
+      .total-row {
+        display: flex;
+        gap: 5px;
+        align-items: flex-end;
+      }
+      .total-row > span:first-child {
+        flex: 1;
+      }
+      .total-row > span {
+        opacity: 0.5;
+      }
+      .total-row > .total {
+        opacity: 1;
+        font-weight: bold;
+        font-size: 16pt;
+      }
+      .warning {
+        padding-left: 40px;
+        color: #919198;
+        font-size: 10pt;
+        position: relative;
+        margin-top: 10px;
+      }
+      .warning::before {
+        content: "i";
+        position: absolute;
+        left: 10px;
+        top: 5px;
+        background: hsl(35, 55%, 55%);
+        border-radius: 50%;
+        width: 15px;
+        height: 16px;
+        text-align: center;
+        color: #4f2642;
+        font-style: italic;
+        padding-right: 1px;
+      }
+      #billing > section > footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 20px;
+        padding-top: 0;
+      }
+      #billing > section > footer > button {
+        background: hsl(320, 50%, 65%);
+        border: 1px solid hsl(320, 50%, 65%);
+        border-radius: 5px;
+        padding: 7px 30px;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 200ms ease-in-out;
+      }
+      #billing > section > footer > button:hover {
+        background: hsl(320, 50%, 55%);
+        border-color: hsl(320, 50%, 85%);
+      }
+      label.plan {
+        color: #919198;
+      }
+      label.plan.checked {
+        color: white;
+      }
+
+      #payment {
+        overflow: visible;
+      }
+      #payment > section {
+        background-color: #4f2642;
+        width: 500px;
+        color: white;
+        font-size: 14pt;
+        text-align: center;
+        padding-top: 40px;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      #payment > section::before {
+        content: "☹";
+        position: absolute;
+        transform: rotateZ(30deg);
+        bottom: 10%;
+        right: 5%;
+        opacity: 0.3;
+        font-size: 48pt;
+      }
+      #payment > section::after {
+        content: "☹";
+        position: absolute;
+        transform: rotateZ(-10deg);
+        top: 60%;
+        left: 5%;
+        opacity: 0.3;
+        font-size: 48pt;
+      }
+      #payment > section > main::after {
+        content: "🦊";
+        position: absolute;
+        transform: rotateZ(50deg);
+        bottom: 60%;
+        left: 8%;
+        opacity: 0.3;
+        font-size: 48pt;
+      }
+      #payment > section > footer {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+      }
+      #payment > section > footer > button {
+        background: hsl(320, 50%, 65%);
+        border: 1px solid hsl(320, 50%, 65%);
+        border-radius: 5px;
+        padding: 7px 30px;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 200ms ease-in-out;
+      }
+      #payment > section > footer > button:hover {
+        background: hsl(320, 50%, 55%);
+        border-color: hsl(320, 50%, 85%);
+      }
+    </style>
+    <script>
+      let billing = false;
+      function getSectionId() {
+        const params = new URLSearchParams(location.search);
+        switch (params.get("section")?.toLowerCase()) {
+          case "perks":
+            return "perks";
+          case "billing-basic":
+            billing = "basic";
+            return "billing";
+          case "billing-full":
+            billing = "full";
+            return "billing";
+          case "payment":
+            return "payment";
+          default:
+            return "root";
+        }
+      }
+      function onBilling() {
+        for (const radio of document.querySelectorAll('[name="plan"]')) {
+          radio.checked = radio.value === "year";
+        }
+
+        document.title = "FoxyTeacup | Plans";
+        const header = document.getElementById("billing-header");
+        const priceMonth = document.getElementById("price-month");
+        const priceYear = document.getElementById("price-year");
+        const discountEl = document.getElementById("discount");
+        const totalPrice = document.getElementById("total");
+        const totalTime = document.getElementById("time");
+        const plan1 = document.getElementById("plan1");
+        const plan2 = document.getElementById("plan2");
+        let price = 499;
+        header.classList.toggle("basic", billing === "basic");
+        header.classList.toggle("full", billing === "full");
+        if (billing === "basic") {
+          header.innerText = "BASIC";
+        } else {
+          header.innerText = "TEACUP";
+          price = 1599;
+        }
+        priceMonth.innerText = `¥${price}`;
+        const pyear = +`${price}9`;
+        priceYear.innerText = `¥${pyear}`;
+        const discount = Math.floor(((price * 12) / pyear - 1) * 100);
+        discountEl.innerText = `SAVE ${discount}%`;
+
+        plan1.addEventListener("change", updateTotal);
+        plan2.addEventListener("change", updateTotal);
+        updateTotal();
+        function updateTotal() {
+          if (plan1.checked) {
+            totalPrice.innerText = `¥${pyear}`;
+            totalTime.innerText = "Year";
+          } else {
+            totalPrice.innerText = `¥${price}`;
+            totalTime.innerText = "Month";
+          }
+          document.querySelector("[for=plan1]").classList.toggle("checked", plan1.checked);
+          document.querySelector("[for=plan2]").classList.toggle("checked", !plan1.checked);
+        }
+      }
+      function onPayment() {
+        const spinner = document.getElementById("spinner");
+        const section = document.querySelector("#payment>section");
+        spinner.style.display = "unset";
+        section.style.display = "none";
+        document.title = "FoxyTeacup | Payment";
+        setTimeout(() => {
+          spinner.style.display = "none";
+          section.style.display = "unset";
+        }, Math.floor(Math.random() * 5000 + 5000));
+      }
+      function onLoad() {
+        const sectionID = getSectionId();
+        for (const article of document.querySelectorAll("body>article")) {
+          article.removeAttribute("selected");
+          if (article.id === sectionID) article.setAttribute("selected", "");
+        }
+
+        if (sectionID !== "root") document.title = "FoxyTeacup | Perks";
+        else setTimeout(() => goSection("perks"), 5000);
+        if (billing) onBilling();
+        if (sectionID === "payment") onPayment();
+      }
+      function goSection(name) {
+        const url = new URL(location.href);
+        url.search = "?section=" + name;
+        history.pushState({}, "", url.href);
+        onLoad();
+      }
+      document.addEventListener("readystatechange", () => {
+        if (document.readyState === "interactive") onLoad();
+      });
+      window.addEventListener("popstate", () => {
+        onLoad();
+      });
+    </script>
+  </head>
+  <body>
+    <article id="root" selected>
+      <span class="loader"></span>
+    </article>
+    <article id="perks">
+      <section class="big">
+        <header class="fancy-text">Unlock a World of Perks with Foxy</header>
+        <main>Plans start at only ¥799/month. Cancel anytime</main>
+        <footer>
+          <button onclick="goSection('billing-full')">
+            <span class="icon icon-fox">Subscribe</span>
+          </button>
+          <button onclick="goSection('billing-full')">
+            <span class="icon icon-butterfly">Gift</span>
+          </button>
+        </footer>
+      </section>
+      <section class="small basic">
+        <header class="fancy-text">FOXY<br /><i>BASIC</i></header>
+        <h3><b>¥499</b> / month</h3>
+        <ol>
+          <li class="icon icon-fox">#fox channel</li>
+          <li class="icon icon-crab">Regular memes</li>
+          <li class="icon icon-paper">Shared activities</li>
+          <li class="icon icon-love">Big thank-you</li>
+        </ol>
+        <footer>
+          <button onclick="goSection('billing-basic')">
+            <span>Subscribe</span>
+          </button>
+        </footer>
+      </section>
+      <section class="small full">
+        <header class="fancy-text">FOXY<br /><i>TEACUP</i></header>
+        <h3><b>¥1599</b> / month</h3>
+        <ol>
+          <li class="icon icon-fox">#fox channel</li>
+          <li class="icon icon-butterfly">#fanfics channel</li>
+          <li class="icon icon-crab">Regular funny memes</li>
+          <li class="icon icon-pinwheel">Play-together</li>
+          <li class="icon icon-paper">Watch-together</li>
+          <li class="icon icon-tie">Custom name color and more!</li>
+        </ol>
+        <footer>
+          <button onclick="goSection('billing-full')">
+            <span>Subscribe</span>
+          </button>
+        </footer>
+      </section>
+    </article>
+    <article id="billing">
+      <section>
+        <header id="billing-header"></header>
+        <div class="breadcrumbs">
+          <b>Select Plan</b>
+          <span>&gt; Payment &gt; Review</span>
+        </div>
+        <main>
+          <b>Choose one:</b>
+          <label class="plan" for="plan1">
+            <input type="radio" value="year" name="plan" id="plan1" />
+            <div class="checkmark"></div>
+            Yearly
+            <div class="discount" id="discount">Save %</div>
+            <div class="price" id="price-year"></div>
+          </label>
+          <label class="plan" for="plan2">
+            <input type="radio" value="month" name="plan" id="plan2" />
+            <div class="checkmark"></div>
+            Monthly
+            <div class="price" id="price-month"></div>
+          </label>
+          <hr />
+          <div class="total-row">
+            <span>Total</span>
+            <span class="total" id="total"></span>
+            <span>/</span>
+            <span id="time"></span>
+          </div>
+          <div class="warning">Final price and currency will be based on your<br />selected payment method.</div>
+        </main>
+        <footer>
+          <button onclick="goSection('payment')">Select</button>
+        </footer>
+      </section>
+    </article>
+    <article id="payment">
+      <span class="loader" id="spinner"></span>
+      <section style="display: none">
+        <main>Due to high tariffs,<br />billing is paused for your country.</main>
+        <footer>
+          <button onclick="goSection('perks')">Back</button>
+        </footer>
+      </section>
+    </article>
+    <footer>
+      <a href="https://www.flaticon.com/packs/origami-48" title="Icon Pack: Origami | Lineal">
+        Icon Pack: Origami | Lineal, created by Good Ware @Flaticon
+      </a>
+    </footer>
+  </body>
+</html>
