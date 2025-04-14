@@ -8,6 +8,12 @@
     <meta name="darkreader-lock" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <style>
+      img.preload {
+        position: fixed;
+        opacity: 0.0001;
+        top: -1000%;
+        left: -1000%;
+      }
       .loader {
         transform: rotateZ(45deg) scale(3, 3);
         perspective: 1000px;
@@ -700,6 +706,13 @@
     </script>
   </head>
   <body>
+    <img src="/fox.png" class="preload" />
+    <img src="/butterfly.png" class="preload" />
+    <img src="/crab.png" class="preload" />
+    <img src="/paper.png" class="preload" />
+    <img src="/love.png" class="preload" />
+    <img src="/pinwheel.png" class="preload" />
+    <img src="/tie.png" class="preload" />
     <article id="root" selected>
       <span class="loader"></span>
     </article>
